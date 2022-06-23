@@ -5,11 +5,30 @@
 
 #include <iostream>
 //use precompiler statements to select the graphics api, have linux and windows use the same api for now
+#define UseVK
 #ifdef _WIN32
-	#define GRAPHICS_API_VULKAN_ENABLE
-#else
-	#ifdef __linux__
+	#ifdef UseVK
 		#define GRAPHICS_API_VULKAN_ENABLE
+	#else
+		#ifdef UseOpenGL
+			#define	NORT
+			#define NODLSS
+			#define NOFSR
+			#define NOMESHSHADERS
+			#define GRAPHICS_API_OPEN_GL_ENABLE
+		#elseif
+			#define GRAPHICS_API_DIRECTX_ENABLE
+		#endif	
+	#endif
+#else
+	//we will likely not support macos because who the fuck games on macos, like, buy a real pc for that
+	#ifdef __linux__
+		//if UseOpenGL is defined, change from vk to gl
+		#ifdef UseOpenGL
+			#define GRAPHICS_API_OPEL_GL_ENABLE
+		#else
+			#define GRAPHICS_API_VULKAN_ENABLE
+		#endif	
 	#endif
 #endif
 

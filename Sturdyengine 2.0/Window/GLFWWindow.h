@@ -1,7 +1,17 @@
 #pragma once
 #include "glfw/glfw3.h"
 #include "glm/common.hpp"
+#ifdef GRAPHICS_API_VULKAN_ENABLE #and #not defined(GRAPHICS_API_DIRECTX_ENABLE) #and #not defined(GRAPHICS_API_OPEN_GL_ENABLE)
 #include "Renderer/VulkanRenderer.h"
+#else 
+	#ifdef GRAPHICS_API_DIRECTX_ENABLE #and #not defined(GRAPHICS_API_VULKAN_ENABLE) #and #not defined(GRAPHICS_API_OPEN_GL_ENABLE)
+		#include "Renderer/DirectXRenderer.h"
+	#else
+		#ifdef GRAPHICS_API_OPEN_GL_ENABLE #and #not defined(GRAPHICS_API_DIRECTX_ENABLE) #and #not defined(GRAPHICS_API_VULKAN_ENABLE)
+			#include "Renderer/OpenGLRenderer.h"
+		#endif
+	#endif
+#endif
 #include <string>
 #include <vector>
 #include <iostream>
@@ -19,8 +29,8 @@ namespace SFT {
 			SFT::Renderer::Renderer* renderer;
 #endif
 		public:
-#ifdef GRAPHICS_API_VULKAN_ENABLE
-			Window(int x, int y, string title, SFT::Renderer::VulkanRenderer& render) {
+#ifdef GRAPHICS_API_VULKAN_ENABLE #or defined GRAPHICS_API_DIRECTX_ENABLE
+			Window(int x, int y, string title, SFT::Renderer::Renderer& render) {
 				this->renderer = &render;
 #else
 			Window(int x, int y, string title) {
@@ -43,6 +53,15 @@ namespace SFT {
 			}
 			//we will now need to index the monitors on the system
 			//this is a function that will return a list of monitors
+			static vector<GLFWmonitor*> getMonitors() {
+				int monitorCount;
+				GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+				vector<GLFWmonitor*> monitorsList;
+				for (int i = 0; i < monitorCount; i++) {
+					monitorsList.push_back(monitors[i]);
+				}
+				return monitorsList;
+			}
 		};
 	}
 }
